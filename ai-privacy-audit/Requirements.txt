@@ -1,0 +1,5 @@
+AI Privacy Audit Tool Requirements
+
+Python standard library is mostly used (re, os, json, argparse, pathlib).
+
+Add external dependencies here if required in the future.

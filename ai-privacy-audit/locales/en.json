@@ -1,0 +1,14 @@
+{
+"messages": {
+"start": "[*] Starting AI Privacy Audit on: {target}",
+"scanning": "Scanned files: {total}",
+"found": "Files with potential Shadow AI risk data: {flagged}",
+"alert": "[!] Risk detected in: {path}",
+"recommendation": "[!] Recommended Action: Move data processing to your local server running Ollama (Llama 3)!",
+"safe": "[✔] No obvious sensitive data detected in the directory."
+},
+"patterns": {
+"US Social Security Number (SSN)": "\b(?!000|666|9\d{2})\d{3}-(?!00)\d{2}-(?!0000)\d{4}\b",
+"UK National Insurance Number": "^[A-CEGHJ-PR-TW-Z]{1}[A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-D]{1}$"
+}
+}
