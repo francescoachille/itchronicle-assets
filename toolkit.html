@@ -1,0 +1,225 @@
+<style>
+    /* Nasconde il titolo automatico di Blogger */
+    .post-title { display: none !important; }
+
+    .toolkit-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    .tool-card {
+        background: var(--bg-body);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 20px;
+    }
+
+    .tool-header {
+        font-family: monospace;
+        font-size: 16px;
+        color: var(--accent);
+        margin-bottom: 15px;
+        border-bottom: 1px dashed var(--border);
+        padding-bottom: 10px;
+    }
+
+    .tool-input {
+        width: 100%;
+        padding: 10px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        color: var(--text-main);
+        border-radius: 4px;
+        font-family: monospace;
+        margin-bottom: 10px;
+    }
+
+    .tool-input:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .tool-btn {
+        background: var(--bg-card);
+        color: var(--text-title);
+        border: 1px solid var(--accent);
+        padding: 8px 15px;
+        cursor: pointer;
+        font-family: monospace;
+        font-weight: bold;
+        border-radius: 4px;
+        transition: 0.3s;
+        width: 100%;
+    }
+
+    .tool-btn:hover {
+        background: var(--accent);
+        color: #111;
+    }
+
+    .tool-result {
+        margin-top: 15px;
+        padding: 10px;
+        background: #111;
+        color: #4bffa5;
+        font-family: monospace;
+        font-size: 13px;
+        border-radius: 4px;
+        min-height: 50px;
+        word-break: break-all;
+        white-space: pre-wrap;
+    }
+</style>
+
+<h2 style="color: var(--text-title); font-size: 28px; margin-bottom: 5px;">
+    <span class="lang-it">IT Security Toolkit</span>
+    <span class="lang-en">IT Security Toolkit</span>
+</h2>
+<span color="var(--text-main)" style="display: block; font-family: monospace; margin-bottom: 20px;">
+    &gt; Browser-based OSINT &amp; Recon utilities
+</span>
+
+<div class="toolkit-grid">
+    <!--TOOL 1: DNS RECON-->
+    <div class="tool-card">
+        <div class="tool-header">&gt; DNS_Recon_API</div>
+        <p style="font-size: 13px; margin-bottom: 15px;">
+            <span class="lang-it">Esegue query DNS tramite Google DoH.</span>
+            <span class="lang-en">Performs DNS queries via Google DoH.</span>
+        </p>
+        <input class="tool-input" id="dns-target" type="text" />
+        <select class="tool-input" id="dns-type">
+            <option value="A">A (IPv4)</option>
+            <option value="AAAA">AAAA (IPv6)</option>
+            <option value="MX">MX (Mail)</option>
+            <option value="TXT">TXT (Text/SPF)</option>
+        </select>
+        <button class="tool-btn" onclick="runDNS()">Resolve</button>
+        <div class="tool-result" id="dns-result">Awaiting target...</div>
+    </div>
+
+    <!--TOOL 2: PAYLOAD ENCODER-->
+    <div class="tool-card">
+        <div class="tool-header">&gt; Base64_Offuscator</div>
+        <p style="font-size: 13px; margin-bottom: 15px;">
+            <span class="lang-it">Encode/Decode rapido per payload e log.</span>
+            <span class="lang-en">Fast Encode/Decode for payloads and logs.</span>
+        </p>
+        <textarea class="tool-input" id="b64-input" rows="3"></textarea>
+        <div style="display: flex; gap: 10px;">
+            <button class="tool-btn" onclick="runBase64('encode')">Encode</button>
+            <button class="tool-btn" onclick="runBase64('decode')">Decode</button>
+        </div>
+        <div class="tool-result" id="b64-result">Ready...</div>
+    </div>
+
+    <!--TOOL 3: SUBNET CALCULATOR-->
+    <div class="tool-card">
+        <div class="tool-header">&gt; CIDR_Subnet_Math</div>
+        <p style="font-size: 13px; margin-bottom: 15px;">
+            <span class="lang-it">Calcola la subnet mask da notazione CIDR.</span>
+            <span class="lang-en">Calculate subnet mask from CIDR notation.</span>
+        </p>
+        <input class="tool-input" id="cidr-input" placeholder="Es. 24 (solo il numero)" type="text" />
+        <button class="tool-btn" onclick="runSubnet()">Calculate Mask</button>
+        <div class="tool-result" id="cidr-result">Awaiting CIDR...</div>
+    </div>
+
+    <!--TOOL 4: SHA-256 HASH GENERATOR-->
+    <div class="tool-card">
+        <div class="tool-header">&gt; DFIR_Hash_Generator</div>
+        <p style="font-size: 13px; margin-bottom: 15px;">
+            <span class="lang-it">Calcola l'impronta SHA-256 per l'analisi di stringhe e IoC.</span>
+            <span class="lang-en">Calculates the SHA-256 hash for string and IoC analysis.</span>
+        </p>
+        <input class="tool-input" id="hash-input" type="text" />
+        <button class="tool-btn" onclick="runHash()">Generate SHA-256</button>
+        <div class="tool-result" id="hash-result">Awaiting string...</div>
+    </div>
+</div>
+<script>
+    // --- DNS Recon Logic ---
+    async function runDNS() {
+        const target = document.getElementById('dns-target').value;
+        const type = document.getElementById('dns-type').value;
+        const resultBox = document.getElementById('dns-result');
+        
+        if(!target) { resultBox.innerText = "Error: No target specified."; return; }
+        
+        resultBox.innerText = "Resolving...";
+        try {
+            // Utilizzo API pubblica DoH di Google
+            const response = await fetch(`https://dns.google/resolve?name=${target}&type=${type}`);
+            const data = await response.json();
+            
+            if(data.Answer) {
+                resultBox.innerText = data.Answer.map(a => a.data).join('\n');
+            } else {
+                resultBox.innerText = "No records found.";
+            }
+        } catch (error) {
+            resultBox.innerText = "Query failed.";
+        }
+    }
+
+    // --- Base64 Logic ---
+    function runBase64(action) {
+        const input = document.getElementById('b64-input').value;
+        const resultBox = document.getElementById('b64-result');
+        
+        if(!input) { resultBox.innerText = "Error: Input is empty."; return; }
+
+        try {
+            if(action === 'encode') {
+                resultBox.innerText = btoa(input);
+            } else {
+                resultBox.innerText = atob(input);
+            }
+        } catch(e) {
+            resultBox.innerText = "Error: Invalid string.";
+        }
+    }
+
+    // --- Subnet Logic ---
+    function runSubnet() {
+        let cidr = parseInt(document.getElementById('cidr-input').value);
+        const resultBox = document.getElementById('cidr-result');
+        
+        if(isNaN(cidr) || cidr < 0 || cidr > 32) {
+            resultBox.innerText = "Error: Insert a number between 0 and 32.";
+            return;
+        }
+
+        let mask = [];
+        for(let i=0; i<4; i++) {
+            let n = Math.min(cidr, 8);
+            mask.push(256 - Math.pow(2, 8-n));
+            cidr -= n;
+        }
+        
+        resultBox.innerText = `Subnet Mask:\n${mask.join('.')}`;
+    }
+  // --- DFIR Hash Logic (SHA-256) ---
+    async function runHash() {
+        const input = document.getElementById('hash-input').value;
+        const resultBox = document.getElementById('hash-result');
+        
+        if(!input) { resultBox.innerText = "Error: Input is empty."; return; }
+
+        try {
+            // Utilizza la Web Crypto API nativa per generare l'hash
+            const msgBuffer = new TextEncoder().encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            
+            // Converte il buffer in una stringa esadecimale leggibile
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            resultBox.innerText = hashHex;
+        } catch(e) {
+            resultBox.innerText = "Error: Crypto API non supportata dal browser.";
+        }
+    }
+</script>
