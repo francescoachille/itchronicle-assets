@@ -1,0 +1,15 @@
+name = "brevo-optin-api"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://itchronicle.com,https://www.itchronicle.com"
+BREVO_TEMPLATE_IT = "11"
+BREVO_TEMPLATE_EN = "12"
+BREVO_LIST_IT = "4"
+BREVO_LIST_EN = "5"
+
+# Per abilitare il rate limiting distribuito con Cloudflare KV:
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "<YOUR_KV_NAMESPACE_ID>"
