@@ -1,3 +1,13 @@
+Instructions for Use and Integration:
+Execution Permissions: After saving the script on the server, make it executable with the command:
+Bash
+chmod +x audit_immutable_backups.sh
+
+
+Customization: Modify the BACKUP_DIR="/backup/repository" variable by entering the actual path where your backup archives reside.
+Automation: You can incorporate this script into a daily check via cron or integrate it into monitoring systems (e.g., sending an email or syslog alert if the script's exit code is other than 0).
+
+
 Istruzioni per l'uso e integrazione:
 Permessi di esecuzione: Dopo aver salvato lo script sul server, rendilo eseguibile con il comando:
 Bash
