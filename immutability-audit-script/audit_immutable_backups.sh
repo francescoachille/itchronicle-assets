@@ -1,4 +1,11 @@
 #!/bin/bash
+# ==============================================================================
+# Script Name: audit_immutable_backups.sh
+# Description: Verifies the immutability status (+i flag) of Linux backups
+# Author: IT Chronicle (https://itchronicle.com)
+# ==============================================================================
+
+# Configuration: Path to the directory containing the backup repositories
 
 # ==============================================================================
 # Script Name: audit_immutable_backups.sh
